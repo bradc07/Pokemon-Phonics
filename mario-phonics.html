@@ -3,1320 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MARIO PHONICS ADVENTURE</title>
+    <title>MARIO KART PHONICS</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;600;700&family=Bangers&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Bangers&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --mario-red: #e60012;
-            --mario-blue: #0084ff;
-            --mario-yellow: #facc15;
-            --mario-green: #4ade80;
-            --sky-blue: #87CEEB;
-            --grass-green: #4ade80;
-            --block-yellow: #f59e0b;
-        }
-
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Fredoka', sans-serif;
+            font-family: 'Bangers', cursive;
             background: linear-gradient(to bottom, #87CEEB 0%, #b3e5fc 100%);
             overflow: hidden;
             user-select: none;
         }
-
-        .pixel-font {
-            font-family: 'Press Start 2P', cursive;
-        }
-
-        .comic-font {
-            font-family: 'Bangers', cursive;
-            letter-spacing: 2px;
-        }
-
-        /* Game Views */
         .game-view {
             position: absolute;
             inset: 0;
             display: none;
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.3s;
         }
-
         .view-visible {
-            display: flex;
-            opacity: 1;
+            display: flex !important;
+            opacity: 1 !important;
         }
-
-        /* Mario Button Styles */
         .mario-button {
-            background: linear-gradient(to bottom, #ff6b6b 0%, #c92a2a 100%);
+            background: linear-gradient(to bottom, #ff6b6b, #c92a2a);
             border: 4px solid #fff;
             border-radius: 16px;
-            box-shadow: 0 6px 0 #8b1a1a, 0 8px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 0 #8b1a1a;
             color: white;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.1s;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
-
-        .mario-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 #8b1a1a, 0 10px 25px rgba(0,0,0,0.5);
-        }
-
         .mario-button:active {
             transform: translateY(4px);
-            box-shadow: 0 2px 0 #8b1a1a, 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 0 #8b1a1a;
         }
-
-        .mario-button-green {
-            background: linear-gradient(to bottom, #51cf66 0%, #2f9e44 100%);
-            box-shadow: 0 6px 0 #1b5e20, 0 8px 20px rgba(0,0,0,0.4);
+        .track {
+            width: 600px;
+            height: 400px;
+            background: #4ade80;
+            border: 8px solid #2d7a3a;
+            border-radius: 200px;
+            position: relative;
+            margin: 20px auto;
         }
-
-        .mario-button-green:active {
-            box-shadow: 0 2px 0 #1b5e20, 0 4px 10px rgba(0,0,0,0.3);
+        .track-lane {
+            position: absolute;
+            width: 560px;
+            height: 360px;
+            border: 4px dashed #fff;
+            border-radius: 180px;
+            left: 16px;
+            top: 16px;
         }
-
-        .mario-button-yellow {
-            background: linear-gradient(to bottom, #ffd43b 0%, #fab005 100%);
-            box-shadow: 0 6px 0 #e67700, 0 8px 20px rgba(0,0,0,0.4);
-            color: #333;
-        }
-
-        .mario-button-yellow:active {
-            box-shadow: 0 2px 0 #e67700, 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .mario-button-blue {
-            background: linear-gradient(to bottom, #4dabf7 0%, #1971c2 100%);
-            box-shadow: 0 6px 0 #0c4a6e, 0 8px 20px rgba(0,0,0,0.4);
-        }
-
-        .mario-button-blue:active {
-            box-shadow: 0 2px 0 #0c4a6e, 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        /* Question Block */
-        .question-block {
-            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
-            border: 4px solid #92400e;
-            border-radius: 12px;
-            box-shadow:
-                inset 0 -4px 0 #d97706,
-                inset 0 4px 0 #fef3c7,
-                0 8px 20px rgba(0,0,0,0.3);
-            animation: float 2s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes jump {
-            0%, 100% { transform: translateY(0) scaleY(1); }
-            30% { transform: translateY(-40px) scaleY(1.1); }
-            50% { transform: translateY(-50px) scaleY(0.95); }
-            70% { transform: translateY(-40px) scaleY(1.05); }
-        }
-
-        @keyframes coin-collect {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            50% { transform: translateY(-80px) scale(1.5); opacity: 1; }
-            100% { transform: translateY(-120px) scale(0.5); opacity: 0; }
-        }
-
-        @keyframes damage {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-        }
-
-        .mario-sprite {
-            font-size: 4rem;
-            transition: all 0.3s;
-        }
-
-        .mario-jump {
-            animation: jump 0.6s ease-out;
-        }
-
-        .coin-animate {
-            animation: coin-collect 0.8s ease-out forwards;
-        }
-
-        .mario-damage {
-            animation: damage 0.5s ease-out;
-            filter: brightness(0.5);
-        }
-
-        /* World Map Styles */
-        .world-node {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 4px solid #fff;
+        .kart {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: all 0.2s;
-            position: relative;
+            font-size: 24px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
-
-        .world-node:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-        }
-
-        .world-node.locked {
-            background: #6b7280 !important;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .world-node.completed {
-            box-shadow: 0 0 20px gold;
-        }
-
-        .world-node.current {
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .path-line {
+        #mario-kart { background: #e60012; }
+        #luigi-kart { background: #00a500; }
+        #peach-kart { background: #ff69b4; }
+        #bowser-kart { background: #ff8c00; }
+        .finish-line {
             position: absolute;
-            background: #8b4513;
-            height: 6px;
-            transform-origin: left center;
+            width: 80px;
+            height: 20px;
+            background: repeating-linear-gradient(45deg, #000, #000 10px, #fff 10px, #fff 20px);
+            left: 260px;
+            top: 10px;
         }
-
-        /* Castle Sprite */
-        .castle {
-            font-size: 3rem;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-
-        /* HUD Styles */
-        .hud {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        .hud-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Ground/Platform */
-        .ground {
-            background: linear-gradient(to bottom, #8b4513 0%, #654321 100%);
-            border-top: 4px solid #a0522d;
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 80px;
-        }
-
-        .ground::before {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 0;
-            right: 0;
-            height: 12px;
-            background: repeating-linear-gradient(
-                90deg,
-                #4ade80 0px,
-                #4ade80 20px,
-                #22c55e 20px,
-                #22c55e 40px
-            );
-        }
-
-        /* Flagpole */
-        .flagpole {
-            position: absolute;
-            right: 100px;
-            bottom: 80px;
-            width: 8px;
-            height: 200px;
-            background: #d4d4d4;
-        }
-
-        .flag {
-            position: absolute;
-            top: 0;
-            right: 8px;
-            width: 40px;
-            height: 30px;
-            background: var(--mario-red);
-            border: 2px solid white;
-            animation: flag-wave 1s ease-in-out infinite;
-        }
-
-        @keyframes flag-wave {
-            0%, 100% { transform: skewY(0deg); }
-            50% { transform: skewY(-5deg); }
-        }
-
-        .mario-slide {
-            animation: slide-down 1s ease-in forwards;
-        }
-
-        @keyframes slide-down {
-            from { transform: translateY(0); }
-            to { transform: translateY(170px); }
-        }
-
-        /* Star Rating */
-        .star-rating {
-            display: flex;
-            gap: 8px;
-            font-size: 2rem;
-        }
-
-        .star-earned {
-            animation: star-pop 0.5s ease-out forwards;
-            transform-origin: center;
-        }
-
-        @keyframes star-pop {
-            0% { transform: scale(0) rotate(0deg); }
-            50% { transform: scale(1.3) rotate(180deg); }
-            100% { transform: scale(1) rotate(360deg); }
-        }
-
-        /* Clouds */
-        .cloud {
-            position: absolute;
-            background: white;
-            border-radius: 100px;
-            opacity: 0.9;
-            animation: float-cloud 20s linear infinite;
-        }
-
-        @keyframes float-cloud {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(100vw); }
-        }
-
-        /* Loading Bar */
-        .progress-bar {
-            height: 8px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(to right, #4ade80, #22c55e);
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .pixel-font {
-                font-size: 10px;
-            }
-            .world-node {
-                width: 50px;
-                height: 50px;
-            }
-            .mario-sprite {
-                font-size: 3rem;
-            }
-        }
+        .spin { animation: spin 0.5s linear; }
     </style>
 </head>
 <body>
 
-    <!-- START SCREEN -->
-    <div id="start-screen" class="game-view view-visible" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(to bottom, #1e40af 0%, #60a5fa 100%);">
-        <div class="text-center">
-            <h1 class="comic-font text-8xl text-white mb-8" style="text-shadow: 4px 4px 0 #dc2626, 8px 8px 20px rgba(0,0,0,0.5);">
-                MARIO<br>PHONICS<br>ADVENTURE
-            </h1>
-            <div class="text-6xl mb-12">🍄</div>
-            <button onclick="startGame()" class="mario-button text-3xl px-12 py-6 comic-font">
-                START
-            </button>
-        </div>
+<!-- START SCREEN -->
+<div id="view-start" class="game-view view-visible flex-col items-center justify-center">
+    <h1 class="text-6xl text-red-600 mb-8" style="font-family: 'Press Start 2P';">MARIO KART</h1>
+    <h2 class="text-4xl text-yellow-400 mb-12" style="font-family: 'Bangers';">PHONICS RACING</h2>
+    <button onclick="startGame()" class="mario-button px-12 py-6 text-3xl">START RACING!</button>
+</div>
+
+<!-- RACING VIEW -->
+<div id="view-race" class="game-view flex-col items-center">
+    <!-- HUD -->
+    <div class="w-full bg-black/80 text-white px-6 py-3 flex justify-between text-2xl">
+        <span id="track-name">🏁 Mario Circuit</span>
+        <span>🪙 <span id="coin-count">0</span></span>
+        <span>Question <span id="question-num">1</span>/<span id="total-questions">5</span></span>
+        <span id="position">Position: 1st</span>
     </div>
 
-    <!-- WORLD MAP -->
-    <div id="world-map" class="game-view" style="flex-direction: column; background: linear-gradient(to bottom, #87CEEB 0%, #b3e5fc 50%, #4ade80 100%);">
-        <!-- HUD -->
-        <div class="hud">
-            <div class="hud-item">
-                <span>🪙</span>
-                <span id="hud-coins">0</span>
-            </div>
-            <div class="hud-item">
-                <span>❤️</span>
-                <span id="hud-lives">3</span>
-            </div>
-            <div class="hud-item pixel-font text-sm">
-                <span id="hud-world">WORLD MAP</span>
-            </div>
-            <div class="hud-item">
-                <span>⭐</span>
-                <span id="hud-stars">0/108</span>
-            </div>
-        </div>
-
-        <!-- World Map Content -->
-        <div class="flex-1 overflow-y-auto p-8" id="world-map-content">
-            <h2 class="comic-font text-5xl text-center text-white mb-8" style="text-shadow: 3px 3px 0 #000;">
-                SELECT A WORLD
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto" id="worlds-container">
-                <!-- Worlds will be generated here -->
-            </div>
-        </div>
+    <!-- Question Panel -->
+    <div class="bg-yellow-400 border-4 border-black rounded-lg p-4 m-4 text-center" style="min-width: 600px;">
+        <div id="question-text" class="text-3xl mb-4">Loading...</div>
+        <div id="options-container" class="grid grid-cols-2 gap-3"></div>
     </div>
 
-    <!-- LEVEL SELECT -->
-    <div id="level-select" class="game-view" style="flex-direction: column;">
-        <!-- HUD -->
-        <div class="hud">
-            <button onclick="backToWorldMap()" class="mario-button-blue px-4 py-2">◀ BACK</button>
-            <div class="hud-item pixel-font text-sm">
-                <span id="level-select-title">WORLD 1</span>
-            </div>
-            <div class="hud-item">
-                <span>⭐</span>
-                <span id="level-select-stars">0/18</span>
-            </div>
-        </div>
-
-        <!-- Level Map -->
-        <div class="flex-1 relative overflow-hidden" id="level-map-container" style="background: linear-gradient(to bottom, #87CEEB 0%, #4ade80 100%);">
-            <!-- Levels will be rendered here -->
-        </div>
+    <!-- Racing Track -->
+    <div class="track">
+        <div class="finish-line"></div>
+        <div class="track-lane"></div>
+        <div id="mario-kart" class="kart">🏎️</div>
+        <div id="luigi-kart" class="kart">🏎️</div>
+        <div id="peach-kart" class="kart">🏎️</div>
+        <div id="bowser-kart" class="kart">🏎️</div>
     </div>
+</div>
+
+<!-- RESULTS VIEW -->
+<div id="view-results" class="game-view flex-col items-center justify-center">
+    <h1 class="text-6xl mb-8">🏁 RACE COMPLETE!</h1>
+    <div class="text-5xl mb-4" id="final-position">1ST PLACE! 🥇</div>
+    <div class="text-3xl mb-8">Coins Earned: <span id="coins-earned">0</span> 🪙</div>
+    <button onclick="startGame()" class="mario-button px-12 py-6 text-3xl">RACE AGAIN!</button>
+</div>
+
+<script>
+// PHONICS DATA
+const PHONICS_DATA = {
+    phase3: [
+        { sound: 'ai', words: [{ t: 'rain', e: '🌧️' }, { t: 'wait', e: '⏳' }, { t: 'train', e: '🚂' }, { t: 'pain', e: '🤕' }, { t: 'sail', e: '⛵' }] },
+        { sound: 'ee', words: [{ t: 'see', e: '👀' }, { t: 'feet', e: '🦶' }, { t: 'tree', e: '🌳' }, { t: 'deep', e: '🌊' }, { t: 'green', e: '💚' }] },
+        { sound: 'oa', words: [{ t: 'boat', e: '🚤' }, { t: 'coat', e: '🧥' }, { t: 'road', e: '🛣️' }, { t: 'soap', e: '🧼' }, { t: 'goat', e: '🐐' }] },
+        { sound: 'ar', words: [{ t: 'car', e: '🚗' }, { t: 'park', e: '🏞️' }, { t: 'star', e: '⭐' }, { t: 'dark', e: '🌑' }, { t: 'farm', e: '🚜' }] }
+    ]
+};
+
+// GAME STATE
+let state = {
+    coins: 0,
+    currentQuestion: 0,
+    totalQuestions: 5,
+    playerProgress: 0,
+    cpuProgress: [0, 0, 0]
+};
+
+// SOUNDS
+const playSound = (freq, dur = 0.1) => {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+};
+
+function startGame() {
+    state = { coins: 0, currentQuestion: 0, totalQuestions: 5, playerProgress: 0, cpuProgress: [0, 0, 0] };
+    switchView('view-race');
+    resetKarts();
+    generateQuestion();
+    updateHUD();
+}
+
+function switchView(viewId) {
+    document.querySelectorAll('.game-view').forEach(v => v.classList.remove('view-visible'));
+    document.getElementById(viewId).classList.add('view-visible');
+}
+
+function resetKarts() {
+    document.getElementById('mario-kart').style.left = '20px';
+    document.getElementById('mario-kart').style.top = '180px';
+    document.getElementById('luigi-kart').style.left = '20px';
+    document.getElementById('luigi-kart').style.top = '200px';
+    document.getElementById('peach-kart').style.left = '20px';
+    document.getElementById('peach-kart').style.top = '220px';
+    document.getElementById('bowser-kart').style.left = '20px';
+    document.getElementById('bowser-kart').style.top = '240px';
+}
+
+function generateQuestion() {
+    if (state.currentQuestion >= state.totalQuestions) {
+        finishRace();
+        return;
+    }
+
+    const data = PHONICS_DATA.phase3;
+    const item = data[Math.floor(Math.random() * data.length)];
+    const sound = item.sound;
+    const wordObj = item.words[Math.floor(Math.random() * item.words.length)];
+    const word = wordObj.t;
+    const emoji = wordObj.e;
+
+    const correct = sound;
+    const options = [correct];
+    const allSounds = ['ai', 'ee', 'oa', 'ar', 'or', 'ow', 'oi'];
+    while (options.length < 4) {
+        const opt = allSounds[Math.floor(Math.random() * allSounds.length)];
+        if (!options.includes(opt)) options.push(opt);
+    }
+    shuffle(options);
+
+    document.getElementById('question-text').innerHTML = `What sound is in the word <strong>"${word}"</strong> ${emoji}?`;
+
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.className = 'mario-button px-6 py-4 text-2xl';
+        btn.onclick = () => checkAnswer(opt, correct);
+        container.appendChild(btn);
+    });
+
+    state.currentQuestion++;
+    updateHUD();
+}
+
+function checkAnswer(selected, correct) {
+    if (selected === correct) {
+        // CORRECT!
+        playSound(800, 0.1);
+        playSound(1000, 0.1);
+        state.coins += 10;
+        state.playerProgress += (100 / state.totalQuestions);
+        moveKartForward('mario-kart', state.playerProgress);
+        setTimeout(generateQuestion, 800);
+    } else {
+        // WRONG!
+        playSound(200, 0.3);
+        document.getElementById('mario-kart').classList.add('spin');
+        setTimeout(() => document.getElementById('mario-kart').classList.remove('spin'), 500);
+        setTimeout(generateQuestion, 1000);
+    }
+
+    // Move CPU karts
+    state.cpuProgress = state.cpuProgress.map(p => p + Math.random() * 15 + 5);
+    moveKartForward('luigi-kart', state.cpuProgress[0]);
+    moveKartForward('peach-kart', state.cpuProgress[1]);
+    moveKartForward('bowser-kart', state.cpuProgress[2]);
+
+    updateHUD();
+}
+
+function moveKartForward(kartId, progress) {
+    const kart = document.getElementById(kartId);
+    const angle = (progress / 100) * 360;
+    const radius = 150;
+    const centerX = 300;
+    const centerY = 200;
+
+    const x = centerX + radius * Math.cos((angle - 90) * Math.PI / 180);
+    const y = centerY + radius * Math.sin((angle - 90) * Math.PI / 180);
+
+    kart.style.left = x + 'px';
+    kart.style.top = y + 'px';
+}
+
+function updateHUD() {
+    document.getElementById('coin-count').textContent = state.coins;
+    document.getElementById('question-num').textContent = state.currentQuestion;
+    document.getElementById('total-questions').textContent = state.totalQuestions;
+
+    const positions = [
+        { name: 'Mario', progress: state.playerProgress },
+        { name: 'Luigi', progress: state.cpuProgress[0] },
+        { name: 'Peach', progress: state.cpuProgress[1] },
+        { name: 'Bowser', progress: state.cpuProgress[2] }
+    ].sort((a, b) => b.progress - a.progress);
+
+    const playerPos = positions.findIndex(p => p.name === 'Mario') + 1;
+    const suffix = playerPos === 1 ? 'st' : playerPos === 2 ? 'nd' : playerPos === 3 ? 'rd' : 'th';
+    document.getElementById('position').textContent = `Position: ${playerPos}${suffix}`;
+}
+
+function finishRace() {
+    const positions = [
+        { name: 'Mario', progress: state.playerProgress },
+        { name: 'Luigi', progress: state.cpuProgress[0] },
+        { name: 'Peach', progress: state.cpuProgress[1] },
+        { name: 'Bowser', progress: state.cpuProgress[2] }
+    ].sort((a, b) => b.progress - a.progress);
+
+    const playerPos = positions.findIndex(p => p.name === 'Mario') + 1;
+    const medals = ['🥇 1ST PLACE!', '🥈 2ND PLACE', '🥉 3RD PLACE', '4TH PLACE'];
+
+    document.getElementById('final-position').textContent = medals[playerPos - 1] || '4TH PLACE';
+    document.getElementById('coins-earned').textContent = state.coins;
+
+    if (playerPos <= 3) {
+        playSound(500, 0.2);
+        setTimeout(() => playSound(600, 0.2), 200);
+        setTimeout(() => playSound(700, 0.3), 400);
+    } else {
+        playSound(300, 0.5);
+    }
+
+    switchView('view-results');
+}
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+</script>
 
-    <!-- IN-LEVEL GAMEPLAY -->
-    <div id="level-play" class="game-view" style="flex-direction: column;">
-        <!-- HUD -->
-        <div class="hud">
-            <div class="hud-item">
-                <span>🪙</span>
-                <span id="play-coins">0</span>
-            </div>
-            <div class="hud-item">
-                <span>❤️</span>
-                <span id="play-lives">3</span>
-            </div>
-            <div class="hud-item pixel-font text-sm">
-                <span id="play-level">1-1</span>
-            </div>
-            <div class="hud-item pixel-font text-xs">
-                <span id="play-progress">Question 1/5</span>
-            </div>
-        </div>
-
-        <!-- Game Scene -->
-        <div class="flex-1 relative" style="background: linear-gradient(to bottom, #87CEEB 0%, #b3e5fc 100%);">
-            <!-- Clouds -->
-            <div class="cloud" style="width: 80px; height: 40px; top: 10%; left: -100px; animation-delay: 0s;"></div>
-            <div class="cloud" style="width: 100px; height: 50px; top: 25%; left: -100px; animation-delay: 5s;"></div>
-            <div class="cloud" style="width: 90px; height: 45px; top: 15%; left: -100px; animation-delay: 10s;"></div>
-
-            <!-- Main Content Area -->
-            <div class="absolute inset-0 flex flex-col items-center justify-center pb-32">
-                <!-- Question Block -->
-                <div class="question-block p-8 mb-8 max-w-2xl">
-                    <h3 class="text-3xl font-bold text-center text-white mb-4" id="question-text">
-                        Complete the word:
-                    </h3>
-                    <div class="text-center mb-4">
-                        <!-- Visual Aid -->
-                        <div id="visual-aid" class="text-6xl mb-2">🌧️</div>
-                        <div id="word-puzzle" class="text-5xl font-bold text-white">r___n</div>
-                    </div>
-                    <p class="text-center text-yellow-200 text-lg" id="hint-text">Sound: /ai/</p>
-                </div>
-
-                <!-- Answer Options -->
-                <div class="grid grid-cols-2 gap-4 max-w-2xl w-full px-4" id="options-container">
-                    <!-- Options will be generated here -->
-                </div>
-
-                <!-- Floating Coin (for animation) -->
-                <div id="floating-coin" class="absolute" style="display: none; font-size: 3rem; pointer-events: none;">🪙</div>
-            </div>
-
-            <!-- Mario Sprite -->
-            <div class="absolute" style="bottom: 90px; left: 100px;">
-                <div id="mario-sprite" class="mario-sprite">🍄</div>
-            </div>
-
-            <!-- Ground -->
-            <div class="ground"></div>
-        </div>
-    </div>
-
-    <!-- LEVEL COMPLETE -->
-    <div id="level-complete" class="game-view" style="flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(to bottom, #1e3a8a 0%, #3b82f6 100%);">
-        <div class="text-center">
-            <!-- Flagpole Scene (optional) -->
-            <div class="mb-12">
-                <div class="text-9xl mb-4">🏁</div>
-                <h2 class="comic-font text-6xl text-white mb-4" style="text-shadow: 3px 3px 0 #000;">
-                    LEVEL COMPLETE!
-                </h2>
-            </div>
-
-            <!-- Results -->
-            <div class="bg-white bg-opacity-20 rounded-3xl p-8 mb-8 backdrop-blur-sm">
-                <div class="text-3xl font-bold text-white mb-6">
-                    <div class="mb-4">🪙 Coins Earned: <span id="result-coins" class="text-yellow-300">0</span></div>
-                    <div class="mb-4">📊 Score: <span id="result-score" class="text-green-300">0/0</span></div>
-                    <div class="mb-4">⭐ Stars Earned:</div>
-                    <div class="star-rating justify-center" id="result-stars">
-                        <span>⭐</span>
-                        <span>⭐</span>
-                        <span>⭐</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Buttons -->
-            <div class="flex gap-4">
-                <button onclick="backToLevelSelect()" class="mario-button-blue text-2xl px-8 py-4 comic-font">
-                    LEVEL SELECT
-                </button>
-                <button onclick="nextLevel()" class="mario-button-green text-2xl px-8 py-4 comic-font" id="next-level-btn">
-                    NEXT LEVEL ▶
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ==================== PHONICS DATA ====================
-        const PHONICS_DATA = {
-            phase3: [
-                { sound: 'ai', words: [{ t: 'rain', e: '🌧️' }, { t: 'wait', e: '⏳' }, { t: 'train', e: '🚂' }, { t: 'pain', e: '🤕' }, { t: 'sail', e: '⛵' }] },
-                { sound: 'ee', words: [{ t: 'see', e: '👀' }, { t: 'feet', e: '🦶' }, { t: 'tree', e: '🌳' }, { t: 'deep', e: '🌊' }, { t: 'green', e: '💚' }] },
-                { sound: 'igh', words: [{ t: 'high', e: '🏔️' }, { t: 'night', e: '🌙' }, { t: 'light', e: '💡' }, { t: 'bright', e: '☀️' }, { t: 'right', e: '➡️' }] },
-                { sound: 'oa', words: [{ t: 'boat', e: '🚤' }, { t: 'coat', e: '🧥' }, { t: 'road', e: '🛣️' }, { t: 'soap', e: '🧼' }, { t: 'goat', e: '🐐' }] },
-                { sound: 'oo', words: [{ t: 'moon', e: '🌙' }, { t: 'boot', e: '👢' }, { t: 'food', e: '🍔' }, { t: 'room', e: '🏠' }, { t: 'zoo', e: '🦁' }] },
-                { sound: 'oo', words: [{ t: 'book', e: '📖' }, { t: 'look', e: '👀' }, { t: 'foot', e: '🦶' }, { t: 'good', e: '👍' }, { t: 'wood', e: '🪵' }] },
-                { sound: 'ar', words: [{ t: 'car', e: '🚗' }, { t: 'park', e: '🏞️' }, { t: 'star', e: '⭐' }, { t: 'dark', e: '🌑' }, { t: 'farm', e: '🚜' }] },
-                { sound: 'or', words: [{ t: 'for', e: '🎁' }, { t: 'born', e: '👶' }, { t: 'corn', e: '🌽' }, { t: 'fork', e: '🍴' }, { t: 'short', e: '📏' }] },
-                { sound: 'ur', words: [{ t: 'fur', e: '🐈' }, { t: 'burn', e: '🔥' }, { t: 'turn', e: '↩️' }, { t: 'hurt', e: '🩹' }, { t: 'surf', e: '🏄' }] },
-                { sound: 'ow', words: [{ t: 'cow', e: '🐄' }, { t: 'now', e: '⏰' }, { t: 'down', e: '⬇️' }, { t: 'town', e: '🏘️' }, { t: 'owl', e: '🦉' }] },
-                { sound: 'oi', words: [{ t: 'coin', e: '🪙' }, { t: 'join', e: '🤝' }, { t: 'soil', e: '🌱' }, { t: 'boil', e: '🍲' }, { t: 'foil', e: '🥡' }] },
-                { sound: 'ear', words: [{ t: 'ear', e: '👂' }, { t: 'hear', e: '👂' }, { t: 'near', e: '📍' }, { t: 'fear', e: '😨' }, { t: 'dear', e: '💌' }] },
-                { sound: 'air', words: [{ t: 'air', e: '💨' }, { t: 'fair', e: '🎡' }, { t: 'hair', e: '💇' }, { t: 'pair', e: '👟' }, { t: 'chair', e: '🪑' }] },
-                { sound: 'ure', words: [{ t: 'pure', e: '💧' }, { t: 'cure', e: '💊' }, { t: 'sure', e: '👍' }, { t: 'lure', e: '🎣' }] },
-                { sound: 'er', words: [{ t: 'hammer', e: '🔨' }, { t: 'letter', e: '✉️' }, { t: 'supper', e: '🍽️' }, { t: 'dinner', e: '🍽️' }, { t: 'better', e: '👍' }] }
-            ],
-            phase4: [
-                { sound: 'st', words: [{ t: 'stop', e: '🛑' }, { t: 'nest', e: '🪺' }, { t: 'star', e: '⭐' }, { t: 'step', e: '👣' }, { t: 'fast', e: '🏃' }] },
-                { sound: 'nd', words: [{ t: 'sand', e: '🏖️' }, { t: 'hand', e: '✋' }, { t: 'wind', e: '💨' }, { t: 'pond', e: '🐸' }, { t: 'band', e: '🎸' }] },
-                { sound: 'mp', words: [{ t: 'lamp', e: '💡' }, { t: 'damp', e: '💧' }, { t: 'jump', e: '🦘' }, { t: 'bump', e: '🤕' }, { t: 'camp', e: '⛺' }] },
-                { sound: 'nt', words: [{ t: 'tent', e: '⛺' }, { t: 'went', e: '🚶' }, { t: 'sent', e: '📦' }, { t: 'hunt', e: '🏹' }, { t: 'ant', e: '🐜' }] },
-                { sound: 'nk', words: [{ t: 'bank', e: '🏦' }, { t: 'sink', e: '🚰' }, { t: 'pink', e: '🩷' }, { t: 'tank', e: '🐠' }, { t: 'wink', e: '😉' }] },
-                { sound: 'ft', words: [{ t: 'lift', e: '🛗' }, { t: 'soft', e: '🧸' }, { t: 'gift', e: '🎁' }, { t: 'left', e: '⬅️' }] },
-                { sound: 'sk', words: [{ t: 'desk', e: '🪑' }, { t: 'mask', e: '🎭' }, { t: 'tusk', e: '🐘' }, { t: 'risk', e: '⚠️' }, { t: 'ask', e: '❓' }] },
-                { sound: 'lt', words: [{ t: 'belt', e: '👖' }, { t: 'melt', e: '🫠' }, { t: 'felt', e: '🧶' }, { t: 'kilt', e: '👗' }] },
-                { sound: 'pl', words: [{ t: 'play', e: '🎮' }, { t: 'plum', e: '🍑' }, { t: 'plan', e: '📝' }, { t: 'plug', e: '🔌' }, { t: 'plus', e: '➕' }] },
-                { sound: 'br', words: [{ t: 'brick', e: '🧱' }, { t: 'brush', e: '🖌️' }, { t: 'bring', e: '🤲' }, { t: 'brown', e: '🟤' }, { t: 'brave', e: '🦁' }] },
-                { sound: 'dr', words: [{ t: 'drum', e: '🥁' }, { t: 'drop', e: '💧' }, { t: 'dress', e: '👗' }, { t: 'drink', e: '🥤' }, { t: 'drag', e: '🚛' }] },
-                { sound: 'tr', words: [{ t: 'tree', e: '🌳' }, { t: 'trip', e: '🧳' }, { t: 'trap', e: '🪤' }, { t: 'truck', e: '🚚' }, { t: 'train', e: '🚂' }] },
-                { sound: 'gr', words: [{ t: 'green', e: '💚' }, { t: 'grab', e: '✊' }, { t: 'grass', e: '🌱' }, { t: 'grow', e: '📈' }, { t: 'grin', e: '😁' }] },
-                { sound: 'pr', words: [{ t: 'pram', e: '👶' }, { t: 'prop', e: '🎭' }, { t: 'print', e: '🖨️' }, { t: 'press', e: '👇' }, { t: 'prize', e: '🏆' }] },
-                { sound: 'cr', words: [{ t: 'crab', e: '🦀' }, { t: 'cross', e: '❌' }, { t: 'crack', e: '🥚' }, { t: 'creep', e: '🐛' }, { t: 'crisp', e: '🥔' }] },
-                { sound: 'fr', words: [{ t: 'frog', e: '🐸' }, { t: 'from', e: '📍' }, { t: 'free', e: '🆓' }, { t: 'fresh', e: '🥗' }] },
-                { sound: 'bl', words: [{ t: 'blue', e: '💙' }, { t: 'black', e: '🖤' }, { t: 'blob', e: '💧' }, { t: 'block', e: '🧱' }] },
-                { sound: 'fl', words: [{ t: 'flag', e: '🏳️' }, { t: 'flat', e: '🏢' }, { t: 'flip', e: '🤸' }, { t: 'flash', e: '📸' }] },
-                { sound: 'gl', words: [{ t: 'glad', e: '😊' }, { t: 'glue', e: '🧴' }, { t: 'glass', e: '🥛' }, { t: 'glow', e: '🌟' }] },
-                { sound: 'cl', words: [{ t: 'clap', e: '👏' }, { t: 'clip', e: '📎' }, { t: 'clock', e: '⏰' }, { t: 'club', e: '♣️' }, { t: 'class', e: '🏫' }] },
-                { sound: 'sl', words: [{ t: 'slip', e: '🍌' }, { t: 'slap', e: '✋' }, { t: 'slow', e: '🐢' }, { t: 'slug', e: '🐌' }] }
-            ],
-            phase5: [
-                { sound: 'ay', words: [{ t: 'day', e: '☀️' }, { t: 'play', e: '🎮' }, { t: 'say', e: '🗣️' }, { t: 'way', e: '🛣️' }, { t: 'stay', e: '🏠' }] },
-                { sound: 'ou', words: [{ t: 'out', e: '🚪' }, { t: 'about', e: '🤔' }, { t: 'cloud', e: '☁️' }, { t: 'scout', e: '⛺' }, { t: 'shout', e: '📢' }] },
-                { sound: 'ie', words: [{ t: 'tie', e: '👔' }, { t: 'lie', e: '🤥' }, { t: 'pie', e: '🥧' }, { t: 'cried', e: '😢' }] },
-                { sound: 'ea', words: [{ t: 'sea', e: '🌊' }, { t: 'tea', e: '☕' }, { t: 'eat', e: '🍽️' }, { t: 'meat', e: '🥩' }, { t: 'read', e: '📖' }] },
-                { sound: 'oy', words: [{ t: 'boy', e: '👦' }, { t: 'toy', e: '🧸' }, { t: 'joy', e: '😂' }, { t: 'enjoy', e: '🎉' }] },
-                { sound: 'ir', words: [{ t: 'girl', e: '👧' }, { t: 'bird', e: '🐦' }, { t: 'shirt', e: '👕' }, { t: 'first', e: '🥇' }, { t: 'third', e: '🥉' }] },
-                { sound: 'ue', words: [{ t: 'blue', e: '💙' }, { t: 'clue', e: '🔍' }, { t: 'true', e: '✅' }, { t: 'glue', e: '🧴' }] },
-                { sound: 'aw', words: [{ t: 'saw', e: '🪚' }, { t: 'paw', e: '🐾' }, { t: 'raw', e: '🥩' }, { t: 'claw', e: '🦞' }, { t: 'draw', e: '✏️' }] },
-                { sound: 'wh', words: [{ t: 'when', e: '⏰' }, { t: 'what', e: '❓' }, { t: 'where', e: '📍' }, { t: 'why', e: '🤔' }] },
-                { sound: 'ph', words: [{ t: 'phone', e: '📱' }, { t: 'photo', e: '📸' }, { t: 'dolphin', e: '🐬' }] },
-                { sound: 'ew', words: [{ t: 'new', e: '🆕' }, { t: 'few', e: '🤏' }, { t: 'grew', e: '🌱' }, { t: 'flew', e: '✈️' }, { t: 'chew', e: '🦷' }] },
-                { sound: 'oe', words: [{ t: 'toe', e: '🦶' }, { t: 'doe', e: '🦌' }, { t: 'foe', e: '🦹' }, { t: 'goes', e: '🚶' }] },
-                { sound: 'au', words: [{ t: 'haul', e: '🚛' }, { t: 'launch', e: '🚀' }] },
-                { sound: 'a-e', words: [{ t: 'make', e: '🔨' }, { t: 'cake', e: '🍰' }, { t: 'game', e: '🎮' }, { t: 'same', e: '👯' }, { t: 'name', e: '📛' }] },
-                { sound: 'e-e', words: [{ t: 'these', e: '👉' }, { t: 'theme', e: '🎨' }] },
-                { sound: 'i-e', words: [{ t: 'time', e: '⏰' }, { t: 'like', e: '👍' }, { t: 'bike', e: '🚲' }, { t: 'slide', e: '🛝' }, { t: 'white', e: '⚪' }] },
-                { sound: 'o-e', words: [{ t: 'home', e: '🏠' }, { t: 'bone', e: '🦴' }, { t: 'stone', e: '🪨' }, { t: 'phone', e: '📱' }] },
-                { sound: 'u-e', words: [{ t: 'cute', e: '🥺' }, { t: 'cube', e: '🧊' }, { t: 'tube', e: '🧪' }, { t: 'huge', e: '🐘' }, { t: 'use', e: '🔨' }] }
-            ],
-            alien: ['thazz', 'quemp', 'jorp', 'vlim', 'zoff', 'chig', 'bome', 'fap', 'gusp', 'kib', 'paz', 'wuff', 'yot', 'draz', 'splob'],
-            rhymes: [
-                { w: "cat", r: ["bat", "hat", "mat", "rat"], d: ["dog", "log", "pig", "sit"], e: "🐱" },
-                { w: "dog", r: ["log", "fog", "jog", "frog"], d: ["cat", "bat", "dig", "dot"], e: "🐶" },
-                { w: "pen", r: ["hen", "ten", "men", "den"], d: ["pan", "pin", "pig", "pet"], e: "🖊️" },
-                { w: "sun", r: ["run", "fun", "bun", "gun"], d: ["sit", "son", "sad", "sin"], e: "☀️" },
-                { w: "cake", r: ["make", "take", "lake", "bake"], d: ["cook", "cat", "car", "cap"], e: "🍰" },
-                { w: "boat", r: ["coat", "goat", "float", "moat"], d: ["boot", "bat", "bit", "bet"], e: "🚤" },
-                { w: "night", r: ["light", "fight", "sight", "might"], d: ["not", "nut", "net", "nit"], e: "🌙" },
-                { w: "play", r: ["day", "say", "may", "way"], d: ["plow", "ply", "pie", "pa"], e: "🎮" }
-            ],
-            syllables: [
-                { w: "cat", c: 1, e: "🐱" }, { w: "dog", c: 1, e: "🐶" }, { w: "fish", c: 1, e: "🐟" },
-                { w: "apple", c: 2, e: "🍎" }, { w: "monkey", c: 2, e: "🐒" }, { w: "tiger", c: 2, e: "🐅" },
-                { w: "elephant", c: 3, e: "🐘" }, { w: "banana", c: 3, e: "🍌" }, { w: "umbrella", c: 3, e: "☂️" },
-                { w: "helicopter", c: 4, e: "🚁" }, { w: "watermelon", c: 4, e: "🍉" }
-            ],
-            tricky_spellings: [
-                { c: "said", w: ["sed", "sayd", "saed"] },
-                { c: "have", w: ["hav", "haiv", "hayv"] },
-                { c: "like", w: ["lik", "liik", "lyke"] },
-                { c: "some", w: ["sum", "som", "samm"] },
-                { c: "come", w: ["cum", "com", "kome"] },
-                { c: "little", w: ["litel", "littel", "litl"] },
-                { c: "one", w: ["won", "wun", "wan"] },
-                { c: "were", w: ["wair", "wear", "weer"] },
-                { c: "there", w: ["thair", "their", "theer"] },
-                { c: "what", w: ["wot", "wat", "wut"] }
-            ],
-            sentence_builders: [
-                { t: "I [went] to the shop.", a: "went", o: ["went", "whent", "wen't", "want"], e: "🛒" },
-                { t: "She [was] happy.", a: "was", o: ["was", "wos", "wuz", "whas"], e: "😊" },
-                { t: "They [are] playing.", a: "are", o: ["are", "ar", "our", "air"], e: "⚽" },
-                { t: "He [said] hello.", a: "said", o: ["said", "sed", "sayd", "saed"], e: "👋" },
-                { t: "We [like] ice cream.", a: "like", o: ["like", "lik", "lyke", "laik"], e: "🍦" },
-                { t: "The bird can [fly].", a: "fly", o: ["fly", "fli", "flye", "figh"], e: "🐦" },
-                { t: "The fish can [swim].", a: "swim", o: ["swim", "swym", "swiam", "swum"], e: "🐟" },
-                { t: "I wear a [hat].", a: "hat", o: ["hat", "het", "hatt", "hut"], e: "🧢" },
-                { t: "The fire is [hot].", a: "hot", o: ["hot", "hott", "hut", "hat"], e: "🔥" },
-                { t: "The ice is [cold].", a: "cold", o: ["cold", "kold", "coald", "could"], e: "🧊" },
-                { t: "I [eat] an apple.", a: "eat", o: ["eat", "eet", "ete", "eit"], e: "🍎" },
-                { t: "I [drink] water.", a: "drink", o: ["drink", "drinck", "dringk", "drik"], e: "💧" },
-                { t: "The sun is [yellow].", a: "yellow", o: ["yellow", "yelow", "yellou", "yellwo"], e: "☀️" },
-                { t: "The grass is [green].", a: "green", o: ["green", "grene", "grean", "grin"], e: "🌿" },
-                { t: "I [sleep] in a bed.", a: "sleep", o: ["sleep", "slep", "sleap", "sliip"], e: "🛏️" }
-            ],
-            tricky: ['the', 'to', 'I', 'no', 'go', 'into', 'he', 'she', 'we', 'me', 'be', 'was', 'you', 'they', 'all', 'are', 'my', 'her', 'said', 'have', 'like', 'so', 'do', 'some', 'come', 'were', 'there', 'little', 'one', 'when', 'out', 'what'],
-            distractors: ['cat', 'dog', 'run', 'sit', 'pen', 'hat', 'leg', 'bus', 'map', 'box', 'cup', 'net', 'pig', 'fox', 'jam', 'van', 'web', 'zip', 'yes', 'big'],
-            mixed: [], // Will combine all phases
-            champion: [] // Will use hardest questions
-        };
-
-        // Populate mixed and champion
-        PHONICS_DATA.mixed = [...PHONICS_DATA.phase3, ...PHONICS_DATA.phase4, ...PHONICS_DATA.phase5];
-        PHONICS_DATA.champion = [...PHONICS_DATA.phase5, ...PHONICS_DATA.tricky_spellings.map(t => ({ sound: 'tricky', words: [{ t: t.c, e: '🤔' }] }))];
-
-        // ==================== WORLD STRUCTURE ====================
-        const WORLDS = {
-            world1: {
-                name: "Grass Land",
-                theme: "Phase 3 Sounds",
-                color: "#4ade80",
-                levels: [
-                    { id: "1-1", phonicsType: "phase3", questions: 5 },
-                    { id: "1-2", phonicsType: "phase3", questions: 5 },
-                    { id: "1-3", phonicsType: "phase3", questions: 6 },
-                    { id: "1-4", phonicsType: "phase3", questions: 6 },
-                    { id: "1-5", phonicsType: "phase3", questions: 7 },
-                    { id: "1-Castle", phonicsType: "phase3", questions: 10, isBoss: true, boss: "Bowser Jr." }
-                ]
-            },
-            world2: {
-                name: "Desert World",
-                theme: "Phase 4 Blends",
-                color: "#facc15",
-                levels: [
-                    { id: "2-1", phonicsType: "phase4", questions: 5 },
-                    { id: "2-2", phonicsType: "phase4", questions: 6 },
-                    { id: "2-3", phonicsType: "phase4", questions: 6 },
-                    { id: "2-4", phonicsType: "phase4", questions: 7 },
-                    { id: "2-5", phonicsType: "phase4", questions: 7 },
-                    { id: "2-Castle", phonicsType: "phase4", questions: 10, isBoss: true, boss: "Boom Boom" }
-                ]
-            },
-            world3: {
-                name: "Water World",
-                theme: "Phase 5 Digraphs",
-                color: "#60a5fa",
-                levels: [
-                    { id: "3-1", phonicsType: "phase5", questions: 6 },
-                    { id: "3-2", phonicsType: "phase5", questions: 6 },
-                    { id: "3-3", phonicsType: "phase5", questions: 7 },
-                    { id: "3-4", phonicsType: "phase5", questions: 7 },
-                    { id: "3-5", phonicsType: "phase5", questions: 8 },
-                    { id: "3-Castle", phonicsType: "phase5", questions: 12, isBoss: true, boss: "Blooper Boss" }
-                ]
-            },
-            world4: {
-                name: "Sky World",
-                theme: "Tricky Words",
-                color: "#c084fc",
-                levels: [
-                    { id: "4-1", phonicsType: "tricky", questions: 6 },
-                    { id: "4-2", phonicsType: "tricky", questions: 7 },
-                    { id: "4-3", phonicsType: "tricky", questions: 7 },
-                    { id: "4-4", phonicsType: "tricky", questions: 8 },
-                    { id: "4-5", phonicsType: "tricky", questions: 8 },
-                    { id: "4-Castle", phonicsType: "tricky", questions: 12, isBoss: true, boss: "Lakitu King" }
-                ]
-            },
-            world5: {
-                name: "Ice World",
-                theme: "Mixed Phonics",
-                color: "#a5f3fc",
-                levels: [
-                    { id: "5-1", phonicsType: "mixed", questions: 7 },
-                    { id: "5-2", phonicsType: "mixed", questions: 8 },
-                    { id: "5-3", phonicsType: "mixed", questions: 8 },
-                    { id: "5-4", phonicsType: "mixed", questions: 9 },
-                    { id: "5-5", phonicsType: "mixed", questions: 9 },
-                    { id: "5-Castle", phonicsType: "mixed", questions: 15, isBoss: true, boss: "Kamek" }
-                ]
-            },
-            world6: {
-                name: "Bowser's Castle",
-                theme: "Master Phonics",
-                color: "#ef4444",
-                levels: [
-                    { id: "6-1", phonicsType: "champion", questions: 8 },
-                    { id: "6-2", phonicsType: "champion", questions: 9 },
-                    { id: "6-3", phonicsType: "champion", questions: 10 },
-                    { id: "6-4", phonicsType: "champion", questions: 10 },
-                    { id: "6-5", phonicsType: "champion", questions: 12 },
-                    { id: "6-Castle", phonicsType: "champion", questions: 20, isBoss: true, boss: "BOWSER" }
-                ]
-            }
-        };
-
-        // ==================== GAME STATE ====================
-        let gameState = {
-            coins: 0,
-            lives: 3,
-            totalStars: 0,
-            unlockedWorlds: ['world1'],
-            completedLevels: {},
-            currentWorld: null,
-            currentLevel: null,
-            currentQuestionIndex: 0,
-            currentQuestions: [],
-            correctAnswers: 0,
-            levelCoins: 0
-        };
-
-        // Load from localStorage
-        function loadGame() {
-            const saved = localStorage.getItem('marioPhonicsGame');
-            if (saved) {
-                gameState = { ...gameState, ...JSON.parse(saved) };
-            }
-        }
-
-        function saveGame() {
-            localStorage.setItem('marioPhonicsGame', JSON.stringify(gameState));
-        }
-
-        // ==================== AUDIO SYSTEM ====================
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const audioCtx = new AudioContext();
-
-        const sfx = {
-            coin: () => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = 1000;
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + 0.1);
-            },
-            jump: () => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + 0.15);
-            },
-            damage: () => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + 0.3);
-            },
-            victory: () => {
-                [523, 659, 784, 1047].forEach((freq, i) => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.frequency.value = freq;
-                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.15);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.15 + 0.2);
-                    osc.start(audioCtx.currentTime + i * 0.15);
-                    osc.stop(audioCtx.currentTime + i * 0.15 + 0.2);
-                });
-            },
-            click: () => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = 800;
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + 0.05);
-            }
-        };
-
-        // ==================== QUESTION GENERATION ====================
-        function generatePhonicsQuestion(phase) {
-            const data = PHONICS_DATA[phase];
-            if (!data || data.length === 0) return generateTrickyWordQuestion();
-
-            const item = data[Math.floor(Math.random() * data.length)];
-            const sound = item.sound;
-            const wordObj = item.words[Math.floor(Math.random() * item.words.length)];
-            const word = wordObj.t;
-            const emoji = wordObj.e;
-
-            let puzzleWord = '';
-            if (sound.includes('-')) {
-                const parts = sound.split('-');
-                puzzleWord = word.replace(parts[0], '_').replace(parts[1], '_');
-            } else {
-                puzzleWord = word.replace(sound, '_'.repeat(sound.length));
-            }
-
-            return {
-                question: `Complete the word:`,
-                answer: sound,
-                options: generatePhonicsOptions(sound, phase),
-                hint: `Sound: /${sound}/`,
-                visual: { emoji: emoji, word: puzzleWord }
-            };
-        }
-
-        function generatePhonicsOptions(correctSound, phase) {
-            const options = [correctSound];
-            const allSounds = PHONICS_DATA[phase].map(i => i.sound);
-
-            while (options.length < 4) {
-                const randomSound = allSounds[Math.floor(Math.random() * allSounds.length)];
-                if (!options.includes(randomSound)) {
-                    options.push(randomSound);
-                }
-            }
-
-            return options.sort(() => Math.random() - 0.5);
-        }
-
-        function generateTrickyWordQuestion() {
-            const trickyWord = PHONICS_DATA.tricky[Math.floor(Math.random() * PHONICS_DATA.tricky.length)];
-            const options = [trickyWord];
-            const distractors = PHONICS_DATA.distractors;
-
-            while (options.length < 4) {
-                const dist = distractors[Math.floor(Math.random() * distractors.length)];
-                if (!options.includes(dist)) {
-                    options.push(dist);
-                }
-            }
-
-            return {
-                question: `Find the Tricky Word!`,
-                answer: trickyWord,
-                options: options.sort(() => Math.random() - 0.5),
-                hint: `Which one can't be sounded out?`,
-                visual: { emoji: '🤔', word: '???' }
-            };
-        }
-
-        function generateRhymeQuestion() {
-            const item = PHONICS_DATA.rhymes[Math.floor(Math.random() * PHONICS_DATA.rhymes.length)];
-            const correct = item.r[Math.floor(Math.random() * item.r.length)];
-            const options = [correct];
-            const distractors = item.d;
-
-            while (options.length < 4) {
-                const d = distractors[Math.floor(Math.random() * distractors.length)];
-                if (!options.includes(d)) options.push(d);
-            }
-
-            return {
-                question: `What rhymes with ${item.w.toUpperCase()}?`,
-                answer: correct,
-                options: options.sort(() => Math.random() - 0.5),
-                hint: `Sounds like ${item.w}...`,
-                visual: { emoji: item.e, word: item.w }
-            };
-        }
-
-        function generateSyllableQuestion() {
-            const item = PHONICS_DATA.syllables[Math.floor(Math.random() * PHONICS_DATA.syllables.length)];
-
-            return {
-                question: `How many syllables?`,
-                answer: item.c.toString(),
-                options: ["1", "2", "3", "4"],
-                hint: `Clap it out!`,
-                visual: { emoji: item.e, word: item.w }
-            };
-        }
-
-        function generateSentenceBuilderQuestion() {
-            const item = PHONICS_DATA.sentence_builders[Math.floor(Math.random() * PHONICS_DATA.sentence_builders.length)];
-
-            return {
-                question: `Complete the sentence:`,
-                answer: item.a,
-                options: item.o.sort(() => Math.random() - 0.5),
-                hint: `What makes sense?`,
-                visual: { emoji: item.e, word: item.t.replace(`[${item.a}]`, '_____') }
-            };
-        }
-
-        function generateTrickySpellingQuestion() {
-            const item = PHONICS_DATA.tricky_spellings[Math.floor(Math.random() * PHONICS_DATA.tricky_spellings.length)];
-            const options = [item.c, ...item.w];
-
-            return {
-                question: `Which spelling is correct?`,
-                answer: item.c,
-                options: options.sort(() => Math.random() - 0.5),
-                hint: `One is real, the others are nonsense!`,
-                visual: { emoji: '🤔', word: '???' }
-            };
-        }
-
-        function generateRealVsAlienQuestion() {
-            const phase = Math.random() > 0.5 ? 'phase3' : 'phase5';
-            const data = PHONICS_DATA[phase];
-            const realWordObj = data[Math.floor(Math.random() * data.length)].words[0];
-            const realWord = realWordObj.t;
-
-            const options = [realWord];
-            const aliens = PHONICS_DATA.alien;
-            while (options.length < 4) {
-                const alien = aliens[Math.floor(Math.random() * aliens.length)];
-                if (!options.includes(alien)) options.push(alien);
-            }
-
-            return {
-                question: `Find the REAL word!`,
-                answer: realWord,
-                options: options.sort(() => Math.random() - 0.5),
-                hint: `Which one makes sense?`,
-                visual: { emoji: '👽', word: '?' }
-            };
-        }
-
-        function generateQuestion(phonicsType) {
-            const rand = Math.random();
-
-            if (phonicsType === 'tricky') {
-                if (rand < 0.6) return generateTrickyWordQuestion();
-                else return generateSentenceBuilderQuestion();
-            }
-            else if (phonicsType === 'mixed') {
-                if (rand < 0.3) return generatePhonicsQuestion('phase3');
-                else if (rand < 0.5) return generatePhonicsQuestion('phase4');
-                else if (rand < 0.7) return generatePhonicsQuestion('phase5');
-                else if (rand < 0.85) return generateRhymeQuestion();
-                else return generateSentenceBuilderQuestion();
-            }
-            else if (phonicsType === 'champion') {
-                if (rand < 0.3) return generatePhonicsQuestion('phase5');
-                else if (rand < 0.5) return generateTrickySpellingQuestion();
-                else if (rand < 0.7) return generateSentenceBuilderQuestion();
-                else if (rand < 0.85) return generateRealVsAlienQuestion();
-                else return generateRhymeQuestion();
-            }
-            else {
-                // phase3, phase4, phase5
-                if (rand < 0.5) return generatePhonicsQuestion(phonicsType);
-                else if (rand < 0.75) return generateRhymeQuestion();
-                else if (rand < 0.9) return generateSyllableQuestion();
-                else return generateRealVsAlienQuestion();
-            }
-        }
-
-        // ==================== VIEW MANAGEMENT ====================
-        function showView(viewId) {
-            document.querySelectorAll('.game-view').forEach(view => {
-                view.classList.remove('view-visible');
-            });
-            document.getElementById(viewId).classList.add('view-visible');
-        }
-
-        // ==================== START GAME ====================
-        function startGame() {
-            sfx.click();
-            loadGame();
-            updateHUD();
-            renderWorldMap();
-            showView('world-map');
-        }
-
-        function updateHUD() {
-            document.getElementById('hud-coins').textContent = gameState.coins;
-            document.getElementById('hud-lives').textContent = gameState.lives;
-            document.getElementById('hud-stars').textContent = `${gameState.totalStars}/108`;
-            document.getElementById('play-coins').textContent = gameState.coins;
-            document.getElementById('play-lives').textContent = gameState.lives;
-        }
-
-        // ==================== WORLD MAP ====================
-        function renderWorldMap() {
-            const container = document.getElementById('worlds-container');
-            container.innerHTML = '';
-
-            Object.keys(WORLDS).forEach(worldKey => {
-                const world = WORLDS[worldKey];
-                const isLocked = !gameState.unlockedWorlds.includes(worldKey);
-                const worldStars = calculateWorldStars(worldKey);
-                const maxStars = world.levels.length * 3;
-
-                const worldCard = document.createElement('div');
-                worldCard.className = `relative rounded-3xl p-6 cursor-pointer transition-all ${isLocked ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`;
-                worldCard.style.background = `linear-gradient(135deg, ${world.color} 0%, ${adjustColor(world.color, -40)} 100%)`;
-                worldCard.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
-
-                if (!isLocked) {
-                    worldCard.onclick = () => enterWorld(worldKey);
-                }
-
-                worldCard.innerHTML = `
-                    <div class="text-center">
-                        <div class="text-6xl mb-4">${getWorldIcon(worldKey)}</div>
-                        <h3 class="comic-font text-3xl text-white mb-2" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-                            ${world.name}
-                        </h3>
-                        <p class="text-white text-lg mb-4">${world.theme}</p>
-                        <div class="text-2xl text-white font-bold">
-                            ${isLocked ? '🔒 LOCKED' : `⭐ ${worldStars}/${maxStars}`}
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(worldCard);
-            });
-        }
-
-        function getWorldIcon(worldKey) {
-            const icons = {
-                world1: '🌿',
-                world2: '🏜️',
-                world3: '🌊',
-                world4: '☁️',
-                world5: '❄️',
-                world6: '🏰'
-            };
-            return icons[worldKey] || '🌍';
-        }
-
-        function adjustColor(color, amount) {
-            const num = parseInt(color.replace('#', ''), 16);
-            const r = Math.max(0, Math.min(255, (num >> 16) + amount));
-            const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
-            const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
-            return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
-        }
-
-        function calculateWorldStars(worldKey) {
-            const world = WORLDS[worldKey];
-            let stars = 0;
-            world.levels.forEach(level => {
-                const completed = gameState.completedLevels[level.id];
-                if (completed) stars += completed.stars || 0;
-            });
-            return stars;
-        }
-
-        // ==================== LEVEL SELECT ====================
-        function enterWorld(worldKey) {
-            sfx.click();
-            gameState.currentWorld = worldKey;
-            document.getElementById('level-select-title').textContent = WORLDS[worldKey].name.toUpperCase();
-            const worldStars = calculateWorldStars(worldKey);
-            const maxStars = WORLDS[worldKey].levels.length * 3;
-            document.getElementById('level-select-stars').textContent = `${worldStars}/${maxStars}`;
-            renderLevelMap(worldKey);
-            showView('level-select');
-        }
-
-        function renderLevelMap(worldKey) {
-            const container = document.getElementById('level-map-container');
-            const world = WORLDS[worldKey];
-            container.innerHTML = '';
-            container.style.background = `linear-gradient(to bottom, #87CEEB 0%, ${world.color} 100%)`;
-
-            const levelsDiv = document.createElement('div');
-            levelsDiv.className = 'relative h-full flex items-center justify-center';
-
-            const pathContainer = document.createElement('div');
-            pathContainer.className = 'relative';
-            pathContainer.style.width = '80%';
-            pathContainer.style.height = '70%';
-
-            world.levels.forEach((level, index) => {
-                const isCompleted = gameState.completedLevels[level.id];
-                const isLocked = index > 0 && !gameState.completedLevels[world.levels[index - 1].id];
-
-                // Calculate position (snake pattern)
-                const row = Math.floor(index / 3);
-                const col = row % 2 === 0 ? index % 3 : 2 - (index % 3);
-                const x = col * 40 + 10;
-                const y = row * 30 + 10;
-
-                const node = document.createElement('div');
-                node.className = `world-node ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
-                node.style.position = 'absolute';
-                node.style.left = `${x}%`;
-                node.style.top = `${y}%`;
-                node.style.background = isLocked ? '#6b7280' : world.color;
-
-                if (!isLocked) {
-                    node.onclick = () => startLevel(level);
-                }
-
-                node.innerHTML = level.isBoss ? '🏰' : level.id;
-                pathContainer.appendChild(node);
-            });
-
-            levelsDiv.appendChild(pathContainer);
-            container.appendChild(levelsDiv);
-        }
-
-        function backToWorldMap() {
-            sfx.click();
-            showView('world-map');
-        }
-
-        // ==================== LEVEL PLAY ====================
-        function startLevel(level) {
-            sfx.click();
-            gameState.currentLevel = level;
-            gameState.currentQuestionIndex = 0;
-            gameState.correctAnswers = 0;
-            gameState.levelCoins = 0;
-
-            // Generate questions
-            gameState.currentQuestions = [];
-            for (let i = 0; i < level.questions; i++) {
-                gameState.currentQuestions.push(generateQuestion(level.phonicsType));
-            }
-
-            document.getElementById('play-level').textContent = level.id;
-            showView('level-play');
-            showQuestion();
-        }
-
-        function showQuestion() {
-            const question = gameState.currentQuestions[gameState.currentQuestionIndex];
-            const questionNum = gameState.currentQuestionIndex + 1;
-            const totalQuestions = gameState.currentQuestions.length;
-
-            document.getElementById('question-text').textContent = question.question;
-            document.getElementById('hint-text').textContent = question.hint;
-            document.getElementById('visual-aid').textContent = question.visual.emoji;
-            document.getElementById('word-puzzle').textContent = question.visual.word;
-            document.getElementById('play-progress').textContent = `Question ${questionNum}/${totalQuestions}`;
-
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-
-            question.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'mario-button text-2xl py-4 comic-font';
-                btn.textContent = opt;
-                btn.onclick = () => checkAnswer(opt, question.answer);
-                container.appendChild(btn);
-            });
-        }
-
-        function checkAnswer(selected, correct) {
-            const mario = document.getElementById('mario-sprite');
-
-            if (selected === correct) {
-                // Correct!
-                sfx.coin();
-                sfx.jump();
-
-                gameState.correctAnswers++;
-                gameState.coins += 10;
-                gameState.levelCoins += 10;
-
-                // Mario jump animation
-                mario.classList.add('mario-jump');
-                setTimeout(() => mario.classList.remove('mario-jump'), 600);
-
-                // Coin animation
-                const coinEl = document.getElementById('floating-coin');
-                coinEl.style.display = 'block';
-                coinEl.style.left = '50%';
-                coinEl.style.top = '40%';
-                coinEl.classList.add('coin-animate');
-                setTimeout(() => {
-                    coinEl.style.display = 'none';
-                    coinEl.classList.remove('coin-animate');
-                }, 800);
-
-                updateHUD();
-
-                // Next question
-                setTimeout(() => {
-                    gameState.currentQuestionIndex++;
-                    if (gameState.currentQuestionIndex < gameState.currentQuestions.length) {
-                        showQuestion();
-                    } else {
-                        completeLevel();
-                    }
-                }, 1000);
-            } else {
-                // Wrong!
-                sfx.damage();
-
-                gameState.lives = Math.max(0, gameState.lives - 1);
-
-                // Mario damage animation
-                mario.classList.add('mario-damage');
-                setTimeout(() => mario.classList.remove('mario-damage'), 500);
-
-                updateHUD();
-
-                // Retry or skip
-                setTimeout(() => {
-                    if (gameState.lives === 0) {
-                        alert('Game Over! Returning to world map...');
-                        gameState.lives = 3;
-                        saveGame();
-                        showView('world-map');
-                    } else {
-                        // Allow retry - just show the same question again
-                        showQuestion();
-                    }
-                }, 600);
-            }
-        }
-
-        function completeLevel() {
-            sfx.victory();
-
-            const level = gameState.currentLevel;
-            const totalQuestions = gameState.currentQuestions.length;
-            const score = gameState.correctAnswers;
-
-            // Calculate stars (3 = perfect, 2 = 1-2 mistakes, 1 = completed)
-            let stars = 1;
-            if (score === totalQuestions) stars = 3;
-            else if (score >= totalQuestions - 2) stars = 2;
-
-            // Save completion
-            if (!gameState.completedLevels[level.id] || gameState.completedLevels[level.id].stars < stars) {
-                const oldStars = gameState.completedLevels[level.id]?.stars || 0;
-                gameState.completedLevels[level.id] = { completed: true, stars };
-                gameState.totalStars += (stars - oldStars);
-            }
-
-            // Unlock next world if completed castle
-            if (level.isBoss) {
-                const worldNum = parseInt(level.id.split('-')[0]);
-                const nextWorld = `world${worldNum + 1}`;
-                if (WORLDS[nextWorld] && !gameState.unlockedWorlds.includes(nextWorld)) {
-                    gameState.unlockedWorlds.push(nextWorld);
-                }
-            }
-
-            saveGame();
-            showLevelComplete(stars, score, totalQuestions);
-        }
-
-        function showLevelComplete(stars, score, total) {
-            document.getElementById('result-coins').textContent = gameState.levelCoins;
-            document.getElementById('result-score').textContent = `${score}/${total}`;
-
-            const starsContainer = document.getElementById('result-stars');
-            starsContainer.innerHTML = '';
-            for (let i = 0; i < 3; i++) {
-                const star = document.createElement('span');
-                star.textContent = i < stars ? '⭐' : '☆';
-                star.style.opacity = i < stars ? '1' : '0.3';
-                if (i < stars) {
-                    star.classList.add('star-earned');
-                    star.style.animationDelay = `${i * 0.2}s`;
-                }
-                starsContainer.appendChild(star);
-            }
-
-            updateHUD();
-            showView('level-complete');
-        }
-
-        function backToLevelSelect() {
-            sfx.click();
-            renderLevelMap(gameState.currentWorld);
-            showView('level-select');
-        }
-
-        function nextLevel() {
-            sfx.click();
-            const world = WORLDS[gameState.currentWorld];
-            const currentIndex = world.levels.findIndex(l => l.id === gameState.currentLevel.id);
-
-            if (currentIndex < world.levels.length - 1) {
-                const nextLevel = world.levels[currentIndex + 1];
-                startLevel(nextLevel);
-            } else {
-                // Completed world, go back to world map
-                renderWorldMap();
-                showView('world-map');
-            }
-        }
-
-        // ==================== INIT ====================
-        loadGame();
-    </script>
 </body>
 </html>
