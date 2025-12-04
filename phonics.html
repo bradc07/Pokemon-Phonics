@@ -1947,7 +1947,7 @@
         const REGIONS = {
             pewter: {
                 name: "Pewter City",
-                leader: { name: "BROCK", sprite: "trainers/brock.png", type: "Rock", color: "green", quote: "My defence is rock solid!" },
+                leader: { name: "BROCK", sprite: "brock.png", type: "Rock", color: "green", quote: "My defence is rock solid!" },
                 bio: { skill: "Phase 3 Sounds", tip: "ai, ee, igh, oa, oo, ar, or, ur, ow, oi, ear, air" },
                 bg: "#8cc56e",
                 pathCol: "#d4a373",
@@ -1963,7 +1963,7 @@
             },
             cerulean: {
                 name: "Cerulean City",
-                leader: { name: "MISTY", sprite: "trainers/misty.png", type: "Water", color: "blue", quote: "Let's see if you can make a splash!" },
+                leader: { name: "MISTY", sprite: "misty.png", type: "Water", color: "blue", quote: "Let's see if you can make a splash!" },
                 bio: { skill: "Phase 4 Adjacent Consonants", tip: "CVCC/CCVC: jump, frog, stamp, crisp" },
                 bg: "#4fc3f7",
                 pathCol: "#0288d1",
@@ -1978,7 +1978,7 @@
             },
             vermilion: {
                 name: "Vermilion City",
-                leader: { name: "LT. SURGE", sprite: "trainers/lt-surge.png", type: "Electric", color: "yellow", quote: "Shocking power comes from practice!" },
+                leader: { name: "LT. SURGE", sprite: "ltsurge.png", type: "Electric", color: "yellow", quote: "Shocking power comes from practice!" },
                 bio: { skill: "Phase 5 Split Digraphs", tip: "a-e, i-e, o-e; ay/ai, ee/ea" },
                 bg: "#fef08a",
                 pathCol: "#facc15",
@@ -1994,7 +1994,7 @@
             },
             celadon: {
                 name: "Celadon City",
-                leader: { name: "ERIKA", sprite: "trainers/erika.png", type: "Grass", color: "green", quote: "These words don't follow the rules!" },
+                leader: { name: "ERIKA", sprite: "erika.png", type: "Grass", color: "green", quote: "These words don't follow the rules!" },
                 bio: { skill: "Tricky Words", tip: "said, were, there, because, could, should, would" },
                 bg: "#86efac",
                 pathCol: "#4ade80",
@@ -2010,7 +2010,7 @@
             },
             fuchsia: {
                 name: "Fuchsia City",
-                leader: { name: "KOGA", sprite: "trainers/koga.png", type: "Poison", color: "purple", quote: "Can you survive my tricky mix?" },
+                leader: { name: "KOGA", sprite: "mysterious.png", type: "Poison", color: "purple", quote: "Can you survive my tricky mix?" },
                 bio: { skill: "Mixed Phonics", tip: "Phases 3-5 combined" },
                 bg: "#c084fc",
                 pathCol: "#a855f7",
@@ -2026,7 +2026,7 @@
             },
             indigo: {
                 name: "Indigo Plateau",
-                leader: { name: "CHAMPION", sprite: "trainers/champion.png", type: "Champion", color: "red", quote: "The ultimate test of a Reading Master!" },
+                leader: { name: "CHAMPION", sprite: "149", type: "Champion", color: "red", quote: "The ultimate test of a Reading Master!" },
                 bio: { skill: "Master Challenge", tip: "All phonics skills" },
                 bg: "#fee2e2",
                 pathCol: "#fca5a5",
@@ -2375,7 +2375,14 @@
                 h.className = `w-full max-w-xl bg-gray-800 border-l-8 border-${r.leader.color}-500 p-6 mb-6 shadow-2xl rounded-r-lg`;
                 h.innerHTML = `<h2 class="pixel-font text-${r.leader.color}-400 text-lg mb-2">MISSION BRIEFING</h2><p class="text-xs text-gray-400 uppercase tracking-widest font-bold">Target: ${r.name}</p>`;
 
-                document.getElementById('hub-leader-img').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/${r.leader.sprite}`;
+                // Use local boss image if sprite ends with .png, otherwise use PokeAPI
+                const leaderImg = document.getElementById('hub-leader-img');
+                if (r.leader.sprite.endsWith('.png')) {
+                    leaderImg.src = r.leader.sprite;
+                } else {
+                    leaderImg.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${r.leader.sprite}.png`;
+                }
+
                 document.getElementById('hub-leader-name').innerText = r.leader.name;
                 document.getElementById('hub-type').innerText = r.leader.type + " Type Master";
                 document.getElementById('hub-type').className = `bg-${r.leader.color}-600 text-[10px] font-bold px-2 py-0.5 rounded text-black uppercase`;
