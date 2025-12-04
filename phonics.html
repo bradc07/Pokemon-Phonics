@@ -1318,6 +1318,34 @@
                 opacity: 0;
             }
         }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce-slow {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out;
+        }
+
+        .animate-bounce-slow {
+            animation: bounce-slow 2s ease-in-out infinite;
+        }
     </style>
 </head>
 
@@ -1379,6 +1407,26 @@
                                 <button onclick="resetSave()"
                                     class="btn-premium btn-blue px-4 py-3 rounded-full font-bold text-xs">
                                     🗑️
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WILBUR INTRO OVERLAY -->
+                    <div id="wilbur-intro" class="absolute inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-8 backdrop-blur-sm">
+                        <div class="text-center max-w-2xl relative animate-fade-in">
+                            <div class="mb-6">
+                                <img src="wilbur.png" alt="Wilbur" class="w-48 h-48 mx-auto object-contain pixelated animate-bounce-slow" onerror="this.style.display='none';">
+                            </div>
+                            <div class="bg-gradient-to-br from-yellow-400 to-orange-500 p-6 rounded-2xl shadow-2xl border-4 border-yellow-600">
+                                <h2 class="pixel-font text-2xl text-gray-900 mb-4 drop-shadow-lg">HI WILBUR!</h2>
+                                <p class="text-lg text-gray-900 font-bold leading-relaxed mb-6" style="font-family: 'Fredoka', sans-serif;">
+                                    It's me, Poké Wilbur! 🎮<br><br>
+                                    I need you to help me conquer the challenges of Phase 3, Phase 4, Phase 5, and those tricky words!<br><br>
+                                    Are you ready for this epic adventure?
+                                </p>
+                                <button onclick="closeWilburIntro()" class="btn-premium btn-red px-8 py-4 rounded-xl font-bold pixel-font text-sm hover:scale-105 transform transition-transform">
+                                    LET'S GO!
                                 </button>
                             </div>
                         </div>
@@ -2231,7 +2279,23 @@
             state.difficulty = difficulty; // Set difficulty
             document.body.classList.add('zoomed-in');
             updateWorldMap();
-            setTimeout(() => switchView('view-world'), 800);
+
+            // Show Wilbur intro overlay
+            setTimeout(() => {
+                const wilburIntro = document.getElementById('wilbur-intro');
+                if (wilburIntro) {
+                    wilburIntro.classList.remove('hidden');
+                }
+            }, 800);
+        }
+
+        function closeWilburIntro() {
+            sfx.click();
+            const wilburIntro = document.getElementById('wilbur-intro');
+            if (wilburIntro) {
+                wilburIntro.classList.add('hidden');
+            }
+            switchView('view-world');
         }
 
         function updateWorldMap() {
@@ -2417,11 +2481,11 @@
                 water: 'linear-gradient(to bottom, #4fc3f7, #0288d1)',
                 bridge: 'linear-gradient(to bottom, #8b7355, #5d4a37)',
                 field: 'linear-gradient(to bottom, #7cb342, #558b2f)',
-                gym_rock: 'url(pewtergymboss.jpg)',
-                gym_water: 'linear-gradient(to bottom, #1e3a8a, #1e40af)',
-                gym_electric: 'linear-gradient(to bottom, #fef08a, #eab308)',
-                gym_grass: 'linear-gradient(to bottom, #86efac, #22c55e)',
-                gym_poison: 'linear-gradient(to bottom, #c084fc, #9333ea)',
+                gym_rock: 'url(brock.png)',
+                gym_water: 'url(misty.png)',
+                gym_electric: 'url(ltsurge.png)',
+                gym_grass: 'url(erika.png)',
+                gym_poison: 'url(mysterious.png)',
                 elite: 'linear-gradient(to bottom, #1e293b, #0f172a)',
                 champion: 'radial-gradient(circle, #ffd700, #b8860b, #1e293b)'
             };
